@@ -11,8 +11,8 @@
 Esfera::Esfera()
 {
 	radio=0.5f;
-	velocidad.x=3;
-	velocidad.y=3;
+	velocidad.x=6;
+	velocidad.y=6;
 }
 
 Esfera::~Esfera()

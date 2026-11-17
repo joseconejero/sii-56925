@@ -4,11 +4,14 @@
 #include <fstream>
 #include "Mundo.h"
 #include "glut.h"
-
+#include <sys/mman.h>
+#include <sys/stat.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -21,7 +24,9 @@ CMundo::CMundo()
 
 CMundo::~CMundo()
 {
-
+	close(fifo);
+	munmap(pMemCompartida, sizeof(DatosMemCompartida));
+    	unlink("/tmp/datosBot.txt");
 }
 
 void CMundo::InitGL()
@@ -128,6 +133,14 @@ void CMundo::OnTimer(int value)
 
 	jugador1.Rebota(esfera);
 	jugador2.Rebota(esfera);
+	if(jugador1.Rebota(esfera)){
+		esfera.velocidad.x=4+2*rand()/(float)RAND_MAX;
+		esfera.velocidad.y=2+2*rand()/(float)RAND_MAX;
+	}
+	if(jugador2.Rebota(esfera)){
+		esfera.velocidad.x=-4-2*rand()/(float)RAND_MAX;
+		esfera.velocidad.y=-2-2*rand()/(float)RAND_MAX;
+	}
 	if(fondo_izq.Rebota(esfera))
 	{
 		esfera.centro.x=0;
@@ -135,6 +148,10 @@ void CMundo::OnTimer(int value)
 		esfera.velocidad.x=2+2*rand()/(float)RAND_MAX;
 		esfera.velocidad.y=2+2*rand()/(float)RAND_MAX;
 		puntos2++;
+		char cad[200];
+    		snprintf(cad, sizeof(cad),
+ 		"Jugador 2 marca 1 punto, lleva un total de %d puntos.\n", puntos2);
+   		 write(fifo, cad, strlen(cad));
 	}
 
 	if(fondo_dcho.Rebota(esfera))
@@ -144,8 +161,29 @@ void CMundo::OnTimer(int value)
 		esfera.velocidad.x=-2-2*rand()/(float)RAND_MAX;
 		esfera.velocidad.y=-2-2*rand()/(float)RAND_MAX;
 		puntos1++;
+		char cad[200];
+   		snprintf(cad, sizeof(cad),
+             	"Jugador 1 marca 1 punto, lleva un total de %d puntos.\n", puntos1);
+    		write(fifo, cad, strlen(cad));
 	}
+	if (puntos1 >= 3) {
+    		close(fifo);
+   		exit(0);
+	}
+	if (puntos2 >= 3) {
+    		close(fifo);
+    		exit(0);
+	}
+	// Actualiza datos del bot
+	pMemCompartida->esfera = esfera;
+	pMemCompartida->raqueta1 = jugador1;
 
+	// Aplica la accion decidida por el bot
+	switch (pMemCompartida->accion) {
+	    case 1:  OnKeyboardDown('w', 0, 0); break;   // arriba
+	    case -1: OnKeyboardDown('s', 0, 0); break;   // abajo
+	    case 0:  jugador1.velocidad.y = 0;  break;   // estático
+	}
 }
 
 void CMundo::OnKeyboardDown(unsigned char key, int x, int y)
@@ -192,4 +230,21 @@ void CMundo::Init()
 	jugador2.g=0;
 	jugador2.x1=6;jugador2.y1=-1;
 	jugador2.x2=6;jugador2.y2=1;
+	fifo = open("/tmp/FIFO", O_WRONLY);
+	if (fifo < 0) {
+	    perror("No puede abrirse el FIFO");
+	}
+		int fdMem = open("/tmp/datosBot.txt", O_RDWR | O_CREAT | O_TRUNC, 0666);
+	if (fdMem < 0) {
+		perror("No puede crearse el fichero de memoria compartida");
+	    exit(1);
+	}
+	ftruncate(fdMem, sizeof(DatosMemCompartida));
+	pMemCompartida = (DatosMemCompartida *) mmap(NULL, sizeof(DatosMemCompartida), PROT_READ | PROT_WRITE, MAP_SHARED, fdMem, 0);
+	close(fdMem);
+	if (pMemCompartida == MAP_FAILED) {
+	    perror("Error en la proyeccion del fichero");
+	    exit(1);
+	}
+	pMemCompartida->accion = 0;
 }

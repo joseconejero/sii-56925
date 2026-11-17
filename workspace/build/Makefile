@@ -129,6 +129,19 @@ tenis/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tenis.dir/build.make CMakeFiles/tenis.dir/build
 .PHONY : tenis/fast
 
+#=============================================================================
+# Target rules for targets named bot
+
+# Build rule for target.
+bot: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bot
+.PHONY : bot
+
+# fast build rule for target.
+bot/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bot.dir/build.make CMakeFiles/bot.dir/build
+.PHONY : bot/fast
+
 src/Esfera.o: src/Esfera.cpp.o
 .PHONY : src/Esfera.o
 
@@ -249,6 +262,30 @@ src/Vector2D.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tenis.dir/build.make CMakeFiles/tenis.dir/src/Vector2D.cpp.s
 .PHONY : src/Vector2D.cpp.s
 
+src/bot.o: src/bot.cpp.o
+.PHONY : src/bot.o
+
+# target to build an object file
+src/bot.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bot.dir/build.make CMakeFiles/bot.dir/src/bot.cpp.o
+.PHONY : src/bot.cpp.o
+
+src/bot.i: src/bot.cpp.i
+.PHONY : src/bot.i
+
+# target to preprocess a source file
+src/bot.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bot.dir/build.make CMakeFiles/bot.dir/src/bot.cpp.i
+.PHONY : src/bot.cpp.i
+
+src/bot.s: src/bot.cpp.s
+.PHONY : src/bot.s
+
+# target to generate assembly for a file
+src/bot.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bot.dir/build.make CMakeFiles/bot.dir/src/bot.cpp.s
+.PHONY : src/bot.cpp.s
+
 src/tenis.o: src/tenis.cpp.o
 .PHONY : src/tenis.o
 
@@ -281,6 +318,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... bot"
 	@echo "... tenis"
 	@echo "... src/Esfera.o"
 	@echo "... src/Esfera.i"
@@ -297,6 +335,9 @@ help:
 	@echo "... src/Vector2D.o"
 	@echo "... src/Vector2D.i"
 	@echo "... src/Vector2D.s"
+	@echo "... src/bot.o"
+	@echo "... src/bot.i"
+	@echo "... src/bot.s"
 	@echo "... src/tenis.o"
 	@echo "... src/tenis.i"
 	@echo "... src/tenis.s"
