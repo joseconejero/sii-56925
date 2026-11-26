@@ -37,7 +37,8 @@ public:
 
 	int puntos1;
 	int puntos2;
-	int fifo;   // descriptor de la tubería hacia el logger
+	int fifoSC;   // lector coordenadas
+	int fifoCS;   // escritura de teclas
 	DatosMemCompartida *pMemCompartida; //puntero a memoria 
 };
 

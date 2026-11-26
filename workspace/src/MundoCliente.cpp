@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 #include <fstream>
-#include "Mundo.h"
+#include "MundoCliente.h"
 #include "glut.h"
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -24,8 +24,10 @@ CMundo::CMundo()
 
 CMundo::~CMundo()
 {
-	close(fifo);
-	munmap(pMemCompartida, sizeof(DatosMemCompartida));
+	close(fifoCS);
+    	unlink("/tmp/FIFO_CS");
+    	close(fifoSC);
+    	munmap(pMemCompartida, sizeof(DatosMemCompartida));
     	unlink("/tmp/datosBot.txt");
 }
 
@@ -120,60 +122,25 @@ void CMundo::OnDraw()
 
 void CMundo::OnTimer(int value)
 {	
-	jugador1.Mueve(0.025f);
-	jugador2.Mueve(0.025f);
-	esfera.Mueve(0.025f);
-	int i;
-	for(i=0;i<paredes.size();i++)
-	{
-		paredes[i].Rebota(esfera);
-		paredes[i].Rebota(jugador1);
-		paredes[i].Rebota(jugador2);
-	}
+	char cad[200];
+    	int n = read(fifoSC, cad, sizeof(cad) - 1);
+   	 if (n <= 0) exit(0);          // el servidor ha terminado
+    	cad[n] = '\0';
 
-	jugador1.Rebota(esfera);
-	jugador2.Rebota(esfera);
-	if(jugador1.Rebota(esfera)){
-		esfera.velocidad.x=4+2*rand()/(float)RAND_MAX;
-		esfera.velocidad.y=2+2*rand()/(float)RAND_MAX;
-	}
-	if(jugador2.Rebota(esfera)){
-		esfera.velocidad.x=-4-2*rand()/(float)RAND_MAX;
-		esfera.velocidad.y=-2-2*rand()/(float)RAND_MAX;
-	}
-	if(fondo_izq.Rebota(esfera))
-	{
-		esfera.centro.x=0;
-		esfera.centro.y=rand()/(float)RAND_MAX;
-		esfera.velocidad.x=2+2*rand()/(float)RAND_MAX;
-		esfera.velocidad.y=2+2*rand()/(float)RAND_MAX;
-		puntos2++;
-		char cad[200];
-    		snprintf(cad, sizeof(cad),
- 		"Jugador 2 marca 1 punto, lleva un total de %d puntos.\n", puntos2);
-   		 write(fifo, cad, strlen(cad));
-	}
+    	sscanf(cad, "%f %f %f %f %f %f %f %f %f %f %d %d",
+           &esfera.centro.x, &esfera.centro.y,
+           &jugador1.x1, &jugador1.y1, &jugador1.x2, &jugador1.y2,
+           &jugador2.x1, &jugador2.y1, &jugador2.x2, &jugador2.y2,
+           &puntos1, &puntos2);
 
-	if(fondo_dcho.Rebota(esfera))
-	{
-		esfera.centro.x=0;
-		esfera.centro.y=rand()/(float)RAND_MAX;
-		esfera.velocidad.x=-2-2*rand()/(float)RAND_MAX;
-		esfera.velocidad.y=-2-2*rand()/(float)RAND_MAX;
-		puntos1++;
-		char cad[200];
-   		snprintf(cad, sizeof(cad),
-             	"Jugador 1 marca 1 punto, lleva un total de %d puntos.\n", puntos1);
-    		write(fifo, cad, strlen(cad));
-	}
-	if (puntos1 >= 3) {
-    		close(fifo);
-   		exit(0);
-	}
-	if (puntos2 >= 3) {
-    		close(fifo);
-    		exit(0);
-	}
+    	// Datos para el bot
+    	pMemCompartida->esfera = esfera;
+    	pMemCompartida->raqueta1 = jugador1;
+
+    	switch (pMemCompartida->accion) {
+    	    case 1:  OnKeyboardDown('w', 0, 0); break;
+    	    case -1: OnKeyboardDown('s', 0, 0); break;
+   	}	
 	// Actualiza datos del bot
 	pMemCompartida->esfera = esfera;
 	pMemCompartida->raqueta1 = jugador1;
@@ -188,16 +155,7 @@ void CMundo::OnTimer(int value)
 
 void CMundo::OnKeyboardDown(unsigned char key, int x, int y)
 {
-	switch(key)
-	{
-//	case 'a':jugador1.velocidad.x=-1;break;
-//	case 'd':jugador1.velocidad.x=1;break;
-	case 's':jugador1.velocidad.y=-4;break;
-	case 'w':jugador1.velocidad.y=4;break;
-	case 'l':jugador2.velocidad.y=-4;break;
-	case 'o':jugador2.velocidad.y=4;break;
-
-	}
+	write(fifoCS, &key, 1);
 }
 
 void CMundo::Init()
@@ -230,11 +188,8 @@ void CMundo::Init()
 	jugador2.g=0;
 	jugador2.x1=6;jugador2.y1=-1;
 	jugador2.x2=6;jugador2.y2=1;
-	fifo = open("/tmp/FIFO", O_WRONLY);
-	if (fifo < 0) {
-	    perror("No puede abrirse el FIFO");
-	}
-		int fdMem = open("/tmp/datosBot.txt", O_RDWR | O_CREAT | O_TRUNC, 0666);
+		
+	int fdMem = open("/tmp/datosBot.txt", O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (fdMem < 0) {
 		perror("No puede crearse el fichero de memoria compartida");
 	    exit(1);
@@ -247,4 +202,22 @@ void CMundo::Init()
 	    exit(1);
 	}
 	pMemCompartida->accion = 0;
+	// Tubería servidor -> cliente (lectura)
+	fifoSC = open("/tmp/FIFO_SC", O_RDONLY);
+	if (fifoSC < 0) {
+	    perror("No puede abrirse FIFO_SC (¿está el servidor arrancado?)");
+	    exit(1);
+	}
+	
+	// Tubería cliente -> servidor (escritura)
+	unlink("/tmp/FIFO_CS");
+	if (mkfifo("/tmp/FIFO_CS", 0600) < 0) {
+	    perror("No puede crearse FIFO_CS");
+	    exit(1);
+	}
+	fifoCS = open("/tmp/FIFO_CS", O_WRONLY);
+	if (fifoCS < 0) {
+	    perror("No puede abrirse FIFO_CS");
+	    exit(1);
+}
 }

@@ -1,4 +1,5 @@
-/home/joseconejero/56925/sii-56925/workspace/build/CMakeFiles/tenis.dir
+/home/joseconejero/56925/sii-56925/workspace/build/CMakeFiles/servidor.dir
+/home/joseconejero/56925/sii-56925/workspace/build/CMakeFiles/cliente.dir
 /home/joseconejero/56925/sii-56925/workspace/build/CMakeFiles/bot.dir
 /home/joseconejero/56925/sii-56925/workspace/build/CMakeFiles/edit_cache.dir
 /home/joseconejero/56925/sii-56925/workspace/build/CMakeFiles/rebuild_cache.dir

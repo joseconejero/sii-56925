@@ -63,7 +63,8 @@ CMAKE_BINARY_DIR = /home/joseconejero/56925/sii-56925/workspace/build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/tenis.dir/all
+all: CMakeFiles/servidor.dir/all
+all: CMakeFiles/cliente.dir/all
 all: CMakeFiles/bot.dir/all
 .PHONY : all
 
@@ -72,35 +73,62 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/tenis.dir/clean
+clean: CMakeFiles/servidor.dir/clean
+clean: CMakeFiles/cliente.dir/clean
 clean: CMakeFiles/bot.dir/clean
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/tenis.dir
+# Target rules for target CMakeFiles/servidor.dir
 
 # All Build rule for target.
-CMakeFiles/tenis.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tenis.dir/build.make CMakeFiles/tenis.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tenis.dir/build.make CMakeFiles/tenis.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/joseconejero/56925/sii-56925/workspace/build/CMakeFiles --progress-num=3,4,5,6,7,8,9 "Built target tenis"
-.PHONY : CMakeFiles/tenis.dir/all
+CMakeFiles/servidor.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/servidor.dir/build.make CMakeFiles/servidor.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/servidor.dir/build.make CMakeFiles/servidor.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/joseconejero/56925/sii-56925/workspace/build/CMakeFiles --progress-num=10,11,12,13,14,15,16 "Built target servidor"
+.PHONY : CMakeFiles/servidor.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/tenis.dir/rule: cmake_check_build_system
+CMakeFiles/servidor.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/joseconejero/56925/sii-56925/workspace/build/CMakeFiles 7
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/tenis.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/servidor.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/joseconejero/56925/sii-56925/workspace/build/CMakeFiles 0
-.PHONY : CMakeFiles/tenis.dir/rule
+.PHONY : CMakeFiles/servidor.dir/rule
 
 # Convenience name for target.
-tenis: CMakeFiles/tenis.dir/rule
-.PHONY : tenis
+servidor: CMakeFiles/servidor.dir/rule
+.PHONY : servidor
 
 # clean rule for target.
-CMakeFiles/tenis.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tenis.dir/build.make CMakeFiles/tenis.dir/clean
-.PHONY : CMakeFiles/tenis.dir/clean
+CMakeFiles/servidor.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/servidor.dir/build.make CMakeFiles/servidor.dir/clean
+.PHONY : CMakeFiles/servidor.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/cliente.dir
+
+# All Build rule for target.
+CMakeFiles/cliente.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cliente.dir/build.make CMakeFiles/cliente.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cliente.dir/build.make CMakeFiles/cliente.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/joseconejero/56925/sii-56925/workspace/build/CMakeFiles --progress-num=3,4,5,6,7,8,9 "Built target cliente"
+.PHONY : CMakeFiles/cliente.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/cliente.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/joseconejero/56925/sii-56925/workspace/build/CMakeFiles 7
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/cliente.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/joseconejero/56925/sii-56925/workspace/build/CMakeFiles 0
+.PHONY : CMakeFiles/cliente.dir/rule
+
+# Convenience name for target.
+cliente: CMakeFiles/cliente.dir/rule
+.PHONY : cliente
+
+# clean rule for target.
+CMakeFiles/cliente.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cliente.dir/build.make CMakeFiles/cliente.dir/clean
+.PHONY : CMakeFiles/cliente.dir/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/bot.dir
